@@ -1,0 +1,158 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modernize Home Empowerment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <img src="images/logo.png" alt="Modernize Home Empowerment" />
+  </header>
+  <main>
+    <section class="form-container">
+      <div class="form-header">Enter to win a 3rd generation Nest
+        <span>Learning Thermostat worth </span>
+      </div>
+      <form id="giveawayForm" novalidate>
+        <input class="textbox" type="text" id="name" name="name" placeholder="Name" />
+        <div class="row">
+          <input class="textbox city" type="text" id="city" name="city" placeholder="City" />
+          <input class="textbox state" type="text" id="state" name="state" placeholder="State" />
+        </div>
+        <input class="textbox" type="tel" id="phone" name="phone" placeholder="Phone Number" />
+        <input class="textbox" type="email" id="email" name="email" placeholder="Email Address" />
+        <button class="btn" type="submit" id="submitBtn">ENTER TO WIN</button>
+      </form>
+    </section>
+    <section class="advertorial" aria-label="Advertorial">
+      <h2>EVEN MORE SAVINGS</h2>
+      <div class="box-inside">
+        <div class="label">Advertorial</div>
+        <h3>Tricks Homeowners Use to Eliminate Bills</h3>
+        <p>
+          Surging energy bills, unpredictable weather patterns and dissatisfaction with utility companies have
+          homeowners scrambling...
+          <a target="_blank" href="https://google.com/">READ MORE</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    $(document).ready(function () {
+      function setCursorPosition(elem, pos) {
+        if (elem.setSelectionRange) {
+          elem.setSelectionRange(pos, pos);
+        } else if (elem.createTextRange) {
+          var range = elem.createTextRange();
+          range.collapse(true);
+          range.moveEnd('character', pos);
+          range.moveStart('character', pos);
+          range.select();
+        }
+      }
+
+      document.querySelectorAll('input[type="tel"]').forEach(function (input) {
+        let keyCode;
+        function mask(event) {
+          if (event.keyCode) keyCode = event.keyCode;
+          let val = input.value.replace(/\D/g, '');
+          let newValue = '';
+          if (val.length > 0) {
+            if (val.length < 4) {
+              newValue = `(${val}`;
+            } else if (val.length < 7) {
+              newValue = `(${val.substring(0, 3)}) ${val.substring(3)}`;
+            } else {
+              newValue = `(${val.substring(0, 3)}) ${val.substring(3, 6)}-${val.substring(6, 10)}`;
+            }
+          }
+          input.value = newValue;
+          if (event.type === 'blur' && val.length < 10) {
+            input.value = '';
+          }
+        }
+
+        input.addEventListener('input', mask, false);
+        input.addEventListener('focus', mask, false);
+        // input.addEventListener('blur', mask, false);
+        input.addEventListener('keydown', mask, false);
+      });
+
+      // Validation function
+      function validateForm() {
+        let isValid = true;
+        $("#giveawayForm input").removeClass("error");
+
+        let nameVal = $("#name").val().trim();
+        if (nameVal.length < 2) {
+          $("#name").addClass("error");
+          isValid = false;
+        }
+
+        let phoneVal = $("#phone").val().trim();
+        let phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+        if (!phoneRegex.test(phoneVal)) {
+          $("#phone").addClass("error");
+          isValid = false;
+        }
+
+        let emailVal = $("#email").val().trim();
+        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailVal)) {
+          $("#email").addClass("error");
+          isValid = false;
+        }
+
+        return isValid;
+      }
+
+      $("#giveawayForm").on("submit", function (e) {
+        let formData = {
+          name: $("#name").val().trim(),
+          city: $("#city").val().trim(),
+          state: $("#state").val().trim(),
+          phone: $("#phone").val().trim(),
+          email: $("#email").val().trim()
+        };
+        e.preventDefault();
+
+        if (!validateForm()) {
+          return;
+        }
+
+        let $btn = $("#submitBtn");
+        $btn.prop("disabled", true);
+
+
+        $.ajax({
+          url: "https://formsws-hilstaging-com-0adj9wt8gzyq.runscope.net/solar",
+          method: "POST",
+          data: formData,
+          success: function () {
+            console.log("Server response:", formData);
+            $btn.text("Submitted");
+            $("#giveawayForm input, #giveawayForm button").prop("disabled", true);
+          },
+          error: function () {
+            alert("There was an error submitting the form. Please try again.");
+            $btn.prop("disabled", false);
+          }
+        });
+      });
+
+      $("#giveawayForm input").on("input", function () {
+        if ($(this).hasClass("error")) {
+          $(this).removeClass("error");
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
